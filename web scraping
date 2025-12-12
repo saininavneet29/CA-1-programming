@@ -1,0 +1,20 @@
+import requests
+from bs4 import BeautifulSoup
+
+url ="https://www.bandbireland.com/"
+
+response = requests.get(url)
+soup = BeautifulSoup(response.content)          
+
+print(soup)
+
+ns = input("\nPress any key to continue....")
+print(soup.prettify())
+
+ans = input("\nPress any key to continue....")
+print(soup.text)
+
+ans = input("\nPress any key to continue....")
+print("Title: ",soup.title)
+print("Tag Name: ",soup.title.tag)
+print("Parent Tag: ",soup.title.parent.name)
