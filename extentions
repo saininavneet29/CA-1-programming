@@ -1,0 +1,85 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+
+class FileExtensionHelper
+{
+    // A dictionary mapping common file extensions to their descriptions
+    private static Dictionary<string, string> _extensionDescriptions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { ".txt", "A plain text file. Can be opened by any text editor." },
+        { ".pdf", "Portable Document Format file. Created by Adobe, used for documents with fixed layouts." },
+        { ".docx", "Microsoft Word Document (Open XML format). Used for rich-text documents." },
+        { ".xlsx", "Microsoft Excel Spreadsheet (Open XML format). Used for spreadsheets and data analysis." },
+        { ".jpg", "JPEG image file. A common format for digital photos, known for compression." },
+        { ".png", "Portable Network Graphics image file. Supports lossless compression and transparency." },
+        { ".exe", "Executable file. A program that can be run on a Windows system." },
+        { ".dll", "Dynamic Link Library. Contains code and data that can be used by other programs." },
+        { ".cs", "C# source code file. Contains human-readable code written in C# syntax." },
+        { "", "File has no extension or the path is a directory." } // Handle cases with no extension
+    };
+
+    /// <summary>
+    /// Gets information about a file extension.
+    /// </summary>
+    /// <param name="filePath">The full path of the file.</param>
+    public static void GetExtensionInfo(string filePath)
+    {
+        if (string.IsNullOrEmpty(filePath))
+        {
+            Console.WriteLine("Error: File path cannot be null or empty.");
+            return;
+        }
+
+        try
+        {
+            // Use Path.GetExtension to safely and efficiently extract the extension
+            string extension = Path.GetExtension(filePath);
+
+            // Convert to lowercase for consistent dictionary lookups
+            string lowerCaseExtension = extension.ToLowerInvariant();
+
+            Console.WriteLine($"\nFile Path: {filePath}");
+            Console.WriteLine($"Extension: {extension}");
+
+            if (_extensionDescriptions.ContainsKey(lowerCaseExtension))
+            {
+                Console.WriteLine($"Description: {_extensionDescriptions[lowerCaseExtension]}");
+            }
+            else
+            {
+                Console.WriteLine("Description: Information not available for this extension in the database.");
+            }
+        }
+        catch (ArgumentException ex)
+        {
+            Console.WriteLine($"Error: Invalid file path characters. {ex.Message}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An unexpected error occurred: {ex.Message}");
+        }
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        Console.WriteLine("Welcome to the File Extension Information System!");
+        Console.WriteLine("Enter a file path to get information about its extension, or type 'exit' to quit.");
+
+        while (true)
+        {
+            Console.Write("\nEnter file path: ");
+            string userInput = Console.ReadLine();
+
+            if (userInput.ToLower() == "exit")
+            {
+                break;
+            }
+
+            FileExtensionHelper.GetExtensionInfo(userInput);
+        }
+    }
+}
