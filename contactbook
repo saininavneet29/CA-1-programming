@@ -1,0 +1,120 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+
+public class Contact
+{
+    // Properties with public getters and private setters for controlled modification (optional, but good practice).
+    public string FirstName { get; private set; }
+    public string LastName { get; private set; }
+    public string Email { get; private set; }
+    public string ContactNumber { get; private set; } // Stored as a string to handle leading zeros and non-numeric formatting internally.
+    public string CompanyName { get; private set; }
+
+    public Contact(string firstName, string lastName, string email, string contactNumber, string companyName)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        ContactNumber = contactNumber;
+        CompanyName = companyName;
+    }
+    public override string ToString()
+    {
+        return $"Name: {FirstName} {LastName}, Email: {Email}, Phone: {ContactNumber}, Company: {CompanyName}";
+    }
+}
+public class ContactBook
+{
+    private List<Contact> _contacts = new List<Contact>();
+
+    private const string EmailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
+
+    private const string PhonePattern = @"^[1-9]\d{8}$";
+
+    public bool AddContact(string firstName, string lastName, string email, string contactNumber, string companyName)
+    {
+        if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName) || string.IsNullOrWhiteSpace(companyName))
+        {
+            Console.WriteLine("Error: First name, last name, and company name cannot be empty.");
+            return false;
+        }
+
+        if (!Regex.IsMatch(email, EmailPattern))
+        {
+            Console.WriteLine($"Error: Invalid email format for {email}.");
+            return false;
+        }
+
+        if (!Regex.IsMatch(contactNumber, PhonePattern))
+        {
+            Console.WriteLine($"Error: Invalid contact number format for {contactNumber}. Must be a non-zero positive 9-digit number (e.g., 123456789).");
+            return false;
+        }
+        var newContact = new Contact(firstName, lastName, email, contactNumber, companyName);
+        _contacts.Add(newContact);
+        Console.WriteLine($"Successfully added contact for {firstName} {lastName}.");
+        return true;
+    }
+    public void DisplayAllContacts()
+    {
+        if (_contacts.Count == 0)
+        {
+            Console.WriteLine("The contact book is empty.");
+            return;
+        }
+
+        Console.WriteLine($"\n--- Contact Book List ({_contacts.Count} contacts) ---");
+        foreach (var contact in _contacts)
+        {
+            Console.WriteLine(contact);
+        }
+        Console.WriteLine("-------------------------------------------------");
+    }
+    public List<Contact> SearchContactsByName(string name)
+    {
+        var results = _contacts.Where(c => c.FirstName.Contains(name, StringComparison.OrdinalIgnoreCase) || 
+                                           c.LastName.Contains(name, StringComparison.OrdinalIgnoreCase)).ToList();
+        return results;
+    }
+}
+class Program
+{
+    static void Main(string[] args)
+    {
+        ContactBook myContactBook = new ContactBook();
+
+        Console.WriteLine("Populating Contact Book with minimum 20 contacts...");
+        myContactBook.AddContact("John", "Doe", "john.doe@example.com", "123456789", "TechCorp");
+        myContactBook.AddContact("Jane", "Smith", "jane.smith@example.com", "987654321", "Innovate Inc.");
+        myContactBook.AddContact("Peter", "Jones", "p.jones@widgets.org", "456123789", "Widgets LLC");
+        myContactBook.AddContact("Mary", "Williams", "mary_w@domain.net", "789456123", "Data Solutions");
+        myContactBook.AddContact("Robert", "Brown", "robert.b@mail.co", "111222333", "R&B Services");
+        myContactBook.AddContact("Linda", "Johnson", "linda.j@company.com", "222333444", "Johnson & Co");
+        myContactBook.AddContact("Michael", "Miller", "m.miller@firm.org", "333444555", "Miller & Partners");
+        myContactBook.AddContact("Sarah", "Davis", "sarah.d@email.net", "444555666", "Davis Enterprises");
+        myContactBook.AddContact("David", "Garcia", "david.g@contact.io", "555666777", "Garcia Logistics");
+        myContactBook.AddContact("Karen", "Rodriguez", "karen.r@solutions.com", "666777888", "Solutions Ltd");
+        myContactBook.AddContact("James", "Wilson", "james.w@global.net", "777888999", "Global Corp");
+        myContactBook.AddContact("Patricia", "Martinez", "patricia.m@marketing.org", "100100100", "Marketing Pros");
+        myContactBook.AddContact("Joseph", "Anderson", "joseph.a@engineering.com", "123123123", "Anderson Engineering");
+        myContactBook.AddContact("Barbara", "Taylor", "barbara.t@design.co", "987987987", "Taylor Designs");
+        myContactBook.AddContact("Charles", "Thomas", "charles.t@management.org", "456456456", "Management Services");
+        myContactBook.AddContact("Susan", "Hernandez", "susan.h@finance.net", "789789789", "Finance Wizards");
+        myContactBook.AddContact("Thomas", "Moore", "thomas.m@consulting.io", "123987456", "Moore Consulting");
+        myContactBook.AddContact("Jessica", "Jackson", "jessica.j@media.com", "987123654", "Media Group");
+        myContactBook.AddContact("Christopher", "White", "chris.w@healthcare.org", "112233445", "HealthCare Inc.");
+        myContactBook.AddContact("Elizabeth", "Harris", "elizabeth.h@research.net", "556677889", "Research Labs");
+
+        Console.WriteLine("\nAttempting to add invalid contacts (these should fail gracefully):");
+        
+        myContactBook.AddContact("Invalid", "ZeroStart", "invalid@example.com", "012345678", "Company A"); 
+        myContactBook.AddContact("Invalid", "TooShort", "invalid@example.com", "12345678", "Company B"); 
+        myContactBook.AddContact("Invalid", "Chars", "invalid@example.com", "123a45678", "Company C"); 
+        myContactBook.AddContact("", "EmptyName", "valid@example.com", "123456789", "Company D");
+        myContactBook.AddContact("Valid", "Name", "bademail.com", "123456789", "Company E");
+
+        myContactBook.DisplayAllContacts();
+    }
+}
